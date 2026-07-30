@@ -1,0 +1,5 @@
+package com.example.rebustillo_advmobprog
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity : FlutterActivity()
