@@ -1,17 +1,11 @@
-# rebustillo_advmobprog
-
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+# Rebustillo, Christian Andrew P.
+## INF233
+## CTADMOBL Advance Mobile Programming
+ 
+A Flutter Project that focuses on advance topics. Covering the web to mobile transactions
+ 
+## Lab Activity Instance
+ 
+## Discussions - Lab 01
+setState is used for simple, temporary changes within a single screen, such as updating a counter. Provider is used to manage and share data across multiple screens, such as switching the app between light and dark mode.
+ 

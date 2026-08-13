@@ -1,89 +1,53 @@
+// packages
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+// import 'package:flutter_dotenv/flutter_dotenv.dart';
+// import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
-void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (context) => ThemeModel(),
-      child: const StateManagementActivity(),
-    ),
+import 'screens/home_screen.dart';
+import 'screens/settings_screen.dart';
+
+// providers
+import 'providers/theme_providers.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then(
+    (_) {
+      // await dotenv.load(fileName: 'assets/.env');
+      runApp(const RoblesAdvMobProg());
+    }
   );
 }
 
-class StateManagementActivity extends StatelessWidget {
-  const StateManagementActivity({super.key});
+class RoblesAdvMobProg extends StatelessWidget {
+  const RoblesAdvMobProg({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final themeModel = Provider.of<ThemeModel>(context);
-
-    return MaterialApp(
-      title: 'App State Example',
-      theme: themeModel.isDark ? ThemeData.dark() : ThemeData.light(),
-      home: const MyHomePage(),
-    );
-  }
-}
-
-class ThemeModel with ChangeNotifier {
-  bool _isDark = false;
-
-  bool get isDark => _isDark;
-
-  void toggleTheme() {
-    _isDark = !_isDark;
-    notifyListeners();
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final themeModel = Provider.of<ThemeModel>(context);
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('App State Example'),
-        actions: [
-          Switch(
-            value: themeModel.isDark,
-            onChanged: (_) => themeModel.toggleTheme(),
+    return ChangeNotifierProvider(
+      create: (_) => ThemeProvider(),
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeModel, _) => MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'E-Commerce App',
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+            useMaterial3: true,
           ),
-        ],
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('Toggle the theme using the switch in the app bar.'),
-            const SizedBox(height: 16),
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+          darkTheme: ThemeData(
+            brightness: Brightness.dark,
+            useMaterial3: true,
+          ),
+          themeMode: themeModel.isDark ? ThemeMode.dark : ThemeMode.light,
+          home: const HomeScreen(),
+          routes: {
+            '/home': (context) => const HomeScreen(),
+            '/settings': (context) => const SettingsScreen(),
+          },
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }
