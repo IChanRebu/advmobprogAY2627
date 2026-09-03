@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/product.dart';
 import '../services/product_service.dart';
 import '../widgets/custom_text.dart';
+import 'cart_screen.dart';
 import 'product_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -49,14 +50,17 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: CustomText(
-          text: 'Elite Gadgets Mart',
-          fontSize: 18,
-        ),
+        title: CustomText(text: 'Elite Gadgets Mart', fontSize: 18),
         centerTitle: true,
         automaticallyImplyLeading: false,
         elevation: 2,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.person_outline),
+            onPressed: () {
+              Navigator.pushNamed(context, '/profile');
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
@@ -73,19 +77,30 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           _buildShopPage(),
           const Center(child: Text('Wishlist')),
-          const Center(child: Text('Cart')),
+          const CartScreen(),
         ],
       ),
+      // Enhancement 2: Hide the chat FloatingActionButton while the user is
+      // viewing the cart screen. This project had no prior chat handler, so
+      // the action reports that the feature is not configured.
+      floatingActionButton: _selectedIndex == 2
+          ? null
+          : FloatingActionButton(
+              tooltip: 'Chat',
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Chat is not configured yet.')),
+                );
+              },
+              child: const Icon(Icons.chat),
+            ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (index) {
           _pageController.jumpToPage(index);
         },
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shop_2),
-            label: 'Shop',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.shop_2), label: 'Shop'),
           BottomNavigationBarItem(
             icon: Icon(Icons.favorite),
             label: 'Wishlist',
@@ -101,16 +116,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildShopPage() {
     final future = _productsFuture ?? ProductService().getAllProducts();
-    
+
     return FutureBuilder<List<Product>>(
       future: future,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(
-            child: CustomText(
-              text: 'Failed to load products',
-              fontSize: 14,
-            ),
+            child: CustomText(text: 'Failed to load products', fontSize: 14),
           );
         }
 
@@ -153,11 +165,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                          childAspectRatio: 0.75,
-                        ),
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 12,
+                              mainAxisSpacing: 12,
+                              childAspectRatio: 0.75,
+                            ),
                         itemCount: _filteredProducts.length,
                         itemBuilder: (context, index) {
                           final product = _filteredProducts[index];
@@ -209,8 +221,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ),
                                           Row(
                                             children: [
-                                              const Icon(Icons.star,
-                                                  color: Colors.amber, size: 14),
+                                              const Icon(
+                                                Icons.star,
+                                                color: Colors.amber,
+                                                size: 14,
+                                              ),
                                               const SizedBox(width: 4),
                                               CustomText(
                                                 text: '${product.rating}',

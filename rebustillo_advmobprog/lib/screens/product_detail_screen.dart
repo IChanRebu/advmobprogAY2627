@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../constant.dart';
 import '../models/product.dart';
+import '../services/cart_service.dart';
 import '../widgets/custom_text.dart';
 
 class ProductDetailScreen extends StatefulWidget {
@@ -14,6 +16,31 @@ class ProductDetailScreen extends StatefulWidget {
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   bool _isDescriptionExpanded = false;
+  bool _isAddingToCart = false;
+
+  Future<void> _addToCart() async {
+    setState(() => _isAddingToCart = true);
+    try {
+      await CartService().addToCart(
+        userId: selectedUserId,
+        productId: widget.product.id,
+        quantity: 1,
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Product added to cart.')));
+      }
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not add product: $error')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isAddingToCart = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,10 +55,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.more_vert),
-            onPressed: () {},
-          ),
+          IconButton(icon: const Icon(Icons.more_vert), onPressed: () {}),
         ],
       ),
       body: Stack(
@@ -43,7 +67,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               child: Image.network(
                 product.thumbnail,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stack) => Container(color: Colors.grey),
+                errorBuilder: (context, error, stack) =>
+                    Container(color: Colors.grey),
               ),
             ),
           ),
@@ -55,7 +80,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, const Color.fromRGBO(0,0,0,0.55)],
+                  colors: [
+                    Colors.transparent,
+                    const Color.fromRGBO(0, 0, 0, 0.55),
+                  ],
                 ),
               ),
             ),
@@ -76,7 +104,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 ),
               ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 16,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -136,19 +167,34 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       ),
                     ),
 
-                    // Read all pill button
-                    Align(
-                      alignment: Alignment.center,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(
+                              () => _isDescriptionExpanded =
+                                  !_isDescriptionExpanded,
+                            );
+                          },
+                          child: Text(
+                            _isDescriptionExpanded ? 'Show less' : 'Read all',
+                          ),
                         ),
-                        onPressed: () {
-                          setState(() => _isDescriptionExpanded = !_isDescriptionExpanded);
-                        },
-                        child: Text(_isDescriptionExpanded ? 'Show less' : 'Read all'),
-                      ),
+                        ElevatedButton.icon(
+                          onPressed: _isAddingToCart ? null : _addToCart,
+                          icon: _isAddingToCart
+                              ? const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Icon(Icons.add_shopping_cart),
+                          label: const Text('Add to cart'),
+                        ),
+                      ],
                     ),
                   ],
                 ),
