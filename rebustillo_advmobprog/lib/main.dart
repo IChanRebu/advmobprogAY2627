@@ -1,29 +1,28 @@
 // packages
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:flutter_dotenv/flutter_dotenv.dart';
-// import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
+import 'firebase_options.dart';
 import 'screens/home_screen.dart';
 import 'screens/cart_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/signin_screen.dart';
+import 'screens/signup_screen.dart';
 import 'screens/splash_screen.dart';
 
-// providers
 import 'providers/theme_providers.dart';
+import 'services/user_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((
-    _,
-  ) {
-    // await dotenv.load(fileName: 'assets/.env');
-    runApp(const RebustilloAdvMobProg());
-  });
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  // await dotenv.load(fileName: 'assets/.env');
+  runApp(const RebustilloAdvMobProg());
 }
 
 class RebustilloAdvMobProg extends StatelessWidget {
@@ -44,13 +43,59 @@ class RebustilloAdvMobProg extends StatelessWidget {
           routes: {
             '/splash': (context) => const SplashScreen(),
             '/signin': (context) => const SignInScreen(),
-            '/home': (context) => const HomeScreen(),
-            '/profile': (context) => const ProfileScreen(),
-            '/cart': (context) => const CartScreen(),
-            '/settings': (context) => const SettingsScreen(),
+            '/signup': (context) => const SignupScreen(),
+            '/home': (context) => const _ProtectedRoute(child: HomeScreen()),
+            '/profile': (context) =>
+                const _ProtectedRoute(child: ProfileScreen()),
+            '/cart': (context) => const _ProtectedRoute(child: CartScreen()),
+            '/settings': (context) =>
+                const _ProtectedRoute(child: SettingsScreen()),
           },
         ),
       ),
+    );
+  }
+}
+
+class _ProtectedRoute extends StatefulWidget {
+  const _ProtectedRoute({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_ProtectedRoute> createState() => _ProtectedRouteState();
+}
+
+class _ProtectedRouteState extends State<_ProtectedRoute> {
+  late final Future<bool> _authenticationCheck = UserService().isLoggedIn();
+  bool _redirectStarted = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<bool>(
+      future: _authenticationCheck,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        if (snapshot.data == true) return widget.child;
+
+        if (!_redirectStarted) {
+          _redirectStarted = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                '/signin',
+                (route) => false,
+              );
+            }
+          });
+        }
+        return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      },
     );
   }
 }

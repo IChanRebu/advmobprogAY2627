@@ -8,6 +8,8 @@ class User {
   final String image;
   final String accessToken;
   final String refreshToken;
+  final int age;
+  final String contactNo;
 
   User({
     required this.id,
@@ -19,19 +21,24 @@ class User {
     required this.image,
     required this.accessToken,
     required this.refreshToken,
+    this.age = 0,
+    this.contactNo = '',
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'] ?? 0,
-      username: json['username'] ?? '',
-      email: json['email'] ?? '',
-      firstName: json['firstName'] ?? '',
-      lastName: json['lastName'] ?? '',
-      gender: json['gender'] ?? '',
-      image: json['image'] ?? '',
-      accessToken: json['accessToken'] ?? json['token'] ?? '',
-      refreshToken: json['refreshToken'] ?? '',
+      id: (json['id'] as num?)?.toInt() ?? 0,
+      username: json['username'] as String? ?? '',
+      email: json['email'] as String? ?? '',
+      firstName: json['firstName'] as String? ?? '',
+      lastName: json['lastName'] as String? ?? '',
+      gender: json['gender'] as String? ?? '',
+      image: json['image'] as String? ?? '',
+      accessToken:
+          json['accessToken'] as String? ?? json['token'] as String? ?? '',
+      refreshToken: json['refreshToken'] as String? ?? '',
+      age: (json['age'] as num?)?.toInt() ?? 0,
+      contactNo: json['contactNo'] as String? ?? json['phone'] as String? ?? '',
     );
   }
 
@@ -47,6 +54,9 @@ class User {
       'accessToken': accessToken,
       'refreshToken': refreshToken,
       'token': accessToken,
+      'age': age,
+      'contactNo': contactNo,
+      'phone': contactNo,
     };
   }
 }
