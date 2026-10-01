@@ -30,7 +30,7 @@ class _SignupScreenState extends State<SignupScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final user = await _userService.createAccount(
+      await _userService.createAccount(
         loginType: LoginType.firebase,
         fName: _fNameController.text.trim(),
         lName: _lNameController.text.trim(),
@@ -40,12 +40,12 @@ class _SignupScreenState extends State<SignupScreen> {
         emailAddress: _emailController.text.trim(),
         password: _passwordController.text,
       );
+      await _userService.signOut();
       if (!mounted) return;
       Navigator.pushNamedAndRemoveUntil(
         context,
-        '/home',
+        '/signin',
         (route) => false,
-        arguments: user.toJson(),
       );
     } catch (error) {
       if (!mounted) return;
@@ -70,11 +70,8 @@ class _SignupScreenState extends State<SignupScreen> {
 
   String? _validateContactNo(String? value) {
     final number = value?.trim() ?? '';
-    final digits = number.replaceAll(RegExp(r'\D'), '');
-    if (!RegExp(r'^\+?[0-9\s()-]+$').hasMatch(number) ||
-        digits.length < 7 ||
-        digits.length > 15) {
-      return 'Enter a valid contact number';
+    if (!RegExp(r'^\d{11}$').hasMatch(number)) {
+      return 'Enter an 11-digit contact number';
     }
     return null;
   }
@@ -165,6 +162,10 @@ class _SignupScreenState extends State<SignupScreen> {
                 controller: _contactNoController,
                 label: 'Contact Number',
                 keyboardType: TextInputType.phone,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(11),
+                ],
                 validator: _validateContactNo,
               ),
               _field(

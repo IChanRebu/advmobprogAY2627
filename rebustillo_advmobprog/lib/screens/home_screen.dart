@@ -4,6 +4,7 @@ import '../models/product.dart';
 import '../services/product_service.dart';
 import '../widgets/custom_text.dart';
 import 'cart_screen.dart';
+import 'chat_screen.dart';
 import 'product_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -50,7 +51,14 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: CustomText(text: 'Elite Gadgets Mart', fontSize: 18),
+        leading: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Image.asset(
+            'assets/heuco.png',
+            fit: BoxFit.contain,
+          ),
+        ),
+        title: CustomText(text: 'Ulqiorra Mart', fontSize: 18),
         centerTitle: true,
         automaticallyImplyLeading: false,
         elevation: 2,
@@ -88,8 +96,9 @@ class _HomeScreenState extends State<HomeScreen> {
           : FloatingActionButton(
               tooltip: 'Chat',
               onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Chat is not configured yet.')),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ChatScreen()),
                 );
               },
               child: const Icon(Icons.chat),

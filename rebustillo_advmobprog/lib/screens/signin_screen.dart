@@ -23,7 +23,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
     setState(() => _isLoading = true);
 
-    try {
+    try { 
       final identifier = _usernameController.text.trim();
       final loginType = identifier.contains('@')
           ? LoginType.firebase
@@ -78,16 +78,12 @@ class _SignInScreenState extends State<SignInScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.shade100,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.lock_outline_rounded,
-                      size: 72,
-                      color: Colors.blue,
+                  Center(
+                    child: Image.asset(
+                      'assets/heuco.png',
+                      width: 84,
+                      height: 84,
+                      fit: BoxFit.contain,
                     ),
                   ),
                   const SizedBox(height: 22),
