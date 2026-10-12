@@ -19,3 +19,6 @@ The Cart model stores cart and product data, while the CartService handles Dummy
 The User model stores the user information, while the UserService handles authentication, saves user data using SharedPreferences, and retrieves the saved information. The SplashScreen and SignInScreen use this service to manage persistent login and authentication before navigating to the profile page. The saved user ID is also used to retrieve and display the user’s cart, following the updated separation-of-responsibilities design pattern.
 
 # Lab Activity 5:
+The UserService handles both DummyJSON and Firebase authentication, including sign-in, account creation, logout, username updates, password changes, and account deletion. The Firebase implementation uses FirebaseAuth for authentication and token management, while the UI provides signup, profile, and logout features. Overall, the UserService keeps the authentication logic separate from the screens, making the application more organized and secure.
+
+# Lab Activity 6:
